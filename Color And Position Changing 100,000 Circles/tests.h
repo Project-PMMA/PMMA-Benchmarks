@@ -10,8 +10,19 @@ constexpr unsigned WINDOW_HEIGHT = 720;
 
 constexpr std::size_t CIRCLE_COUNT = 100'000;
 constexpr float CIRCLE_RADIUS = 50.0f;
-
 constexpr std::size_t CIRCLE_POINTS = 24;
+
+constexpr float WARM_UP_TIME = 3.0f;
+constexpr float BENCHMARK_TIME = 3.0f;
+
+static std::chrono::time_point<std::chrono::steady_clock> BenchmarkStartTime;
+
+static double duration = 0.0;
+static unsigned long long LastCPUTime = 0;
+static std::chrono::time_point<std::chrono::steady_clock> LastCPUCheck;
+static double cpuUsage = 0.0;
+constexpr double CPU_SAMPLE_INTERVAL = 0.5;
+static bool justReset = true;
 
 static std::uint32_t RNG_STATE = 0x12345678u;
 
@@ -45,24 +56,12 @@ inline void RandomColor(std::uint8_t *out)
     out[3] = static_cast<std::uint8_t>(r >> 24);
 }
 
-void PMMA_Test();
-void SFML_Test();
-void RayLib_Test();
-
-static std::chrono::time_point<std::chrono::steady_clock> BenchmarkStartTime;
-
-static double duration = 0.0;
-
-static unsigned long long LastCPUTime = 0;
-static std::chrono::time_point<std::chrono::steady_clock> LastCPUCheck;
-
-static double cpuUsage = 0.0;
-constexpr double CPU_SAMPLE_INTERVAL = 0.5;
-
-static bool justReset = true;
-
 void ResetBenchmark();
 
 std::chrono::time_point<std::chrono::steady_clock> FrameStart();
 
 void FrameEnd(std::chrono::time_point<std::chrono::steady_clock> FrameStartTime);
+
+void PMMA_Test();
+void SFML_Test();
+void RayLib_Test();

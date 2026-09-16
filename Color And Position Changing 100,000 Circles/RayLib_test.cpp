@@ -28,7 +28,7 @@ void RayLib_Test()
             static_cast<unsigned char>(GetRandomValue(0, 255)),
             static_cast<unsigned char>(GetRandomValue(0, 255)),
             static_cast<unsigned char>(GetRandomValue(0, 255)),
-            255
+            static_cast<unsigned char>(GetRandomValue(0, 255))
         };
     }
 
@@ -51,7 +51,7 @@ void RayLib_Test()
                 static_cast<unsigned char>(GetRandomValue(0, 255)),
                 static_cast<unsigned char>(GetRandomValue(0, 255)),
                 static_cast<unsigned char>(GetRandomValue(0, 255)),
-                255
+                static_cast<unsigned char>(GetRandomValue(0, 255))
             };
 
             DrawCircle(
@@ -68,7 +68,7 @@ void RayLib_Test()
         std::chrono::duration<float> elapsed =
             WarmUpEndTime - WarmUpStartTime;
 
-        if (elapsed.count() > 30.0f) {
+        if (elapsed.count() > WARM_UP_TIME) {
             break;
         }
     }
@@ -96,7 +96,7 @@ void RayLib_Test()
                 static_cast<unsigned char>(GetRandomValue(0, 255)),
                 static_cast<unsigned char>(GetRandomValue(0, 255)),
                 static_cast<unsigned char>(GetRandomValue(0, 255)),
-                255
+                static_cast<unsigned char>(GetRandomValue(0, 255))
             };
 
             DrawCircle(
@@ -115,7 +115,7 @@ void RayLib_Test()
         std::chrono::duration<float> elapsed =
             BenchmarkLoopEnd - BenchmarkLoopStart;
 
-        if (elapsed.count() > 60.0f) {
+        if (elapsed.count() > BENCHMARK_TIME) {
             break;
         }
     }

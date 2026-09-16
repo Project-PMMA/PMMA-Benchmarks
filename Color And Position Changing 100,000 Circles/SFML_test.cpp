@@ -82,7 +82,7 @@ void SFML_Test()
         std::chrono::duration<float> elapsed = WarmUpEndTime - WarmUpStartTime;
         float elapsedSeconds = elapsed.count();
 
-        if (elapsedSeconds > 30.0f) {
+        if (elapsedSeconds > WARM_UP_TIME) {
             break;
         }
     }
@@ -132,7 +132,7 @@ void SFML_Test()
         std::chrono::duration<float> elapsed = BenchmarkLoopEnd - BenchmarkLoopStart;
         float elapsedSeconds = elapsed.count();
 
-        if (elapsedSeconds > 60.0f) {
+        if (elapsedSeconds > BENCHMARK_TIME) {
             break;
         }
     }
