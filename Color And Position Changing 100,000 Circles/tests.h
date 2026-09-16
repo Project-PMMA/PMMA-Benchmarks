@@ -53,11 +53,10 @@ inline void RandomColor(std::uint8_t *out)
 }
 
 void PMMA_Test();
-
-void SFML_test();
+void SFML_Test();
+void RayLib_Test();
 
 static std::chrono::time_point<std::chrono::steady_clock> BenchmarkStartTime;
-static std::chrono::time_point<std::chrono::steady_clock> FrameStartTime;
 
 static double duration = 0.0;
 
@@ -66,6 +65,8 @@ static std::chrono::time_point<std::chrono::steady_clock> LastCPUCheck;
 
 static double cpuUsage = 0.0;
 constexpr double CPU_SAMPLE_INTERVAL = 0.5;
+
+static bool justReset = true;
 
 inline unsigned long long FileTimeToULL(const FILETIME& ft)
 {
@@ -79,23 +80,26 @@ inline unsigned long long FileTimeToULL(const FILETIME& ft)
 inline void ResetBenchmark()
 {
     BenchmarkStartTime = std::chrono::steady_clock::now();
-
-    FrameStartTime = {};
-
     duration = 0.0;
-
-    LastCPUTime = 0;
-    LastCPUCheck = {};
-
     cpuUsage = 0.0;
+
+    // Grab the current state so the delta math works perfectly
+    FILETIME creationTime, exitTime, kernelTime, userTime;
+    if (GetProcessTimes(GetCurrentProcess(), &creationTime, &exitTime, &kernelTime, &userTime)) {
+        LastCPUTime = FileTimeToULL(kernelTime) + FileTimeToULL(userTime);
+        LastCPUCheck = std::chrono::steady_clock::now();
+    }
+
+    justReset = true; // Force the next frame to bypass the 0.5s rule
 }
 
-inline void FrameStart()
+
+inline std::chrono::time_point<std::chrono::steady_clock> FrameStart()
 {
-    FrameStartTime = std::chrono::steady_clock::now();
+    return std::chrono::steady_clock::now();
 }
 
-inline void FrameEnd()
+inline void FrameEnd(std::chrono::time_point<std::chrono::steady_clock> FrameStartTime)
 {
     std::chrono::time_point<std::chrono::steady_clock> FrameEndTime = std::chrono::steady_clock::now();
 
@@ -142,7 +146,7 @@ inline void FrameEnd()
                 ).count();
 
             // Only update CPU usage every 0.5 seconds
-            if (wallTime >= CPU_SAMPLE_INTERVAL)
+            if (justReset  || wallTime >= CPU_SAMPLE_INTERVAL)
             {
                 double cpuTime =
                     static_cast<double>(
@@ -164,6 +168,7 @@ inline void FrameEnd()
                 // Start the next 0.5 second sample
                 LastCPUTime = currentCPUTime;
                 LastCPUCheck = now;
+                justReset = false;
             }
         }
     }

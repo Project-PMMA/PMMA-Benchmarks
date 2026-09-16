@@ -94,7 +94,7 @@ void SFML_test()
 
     while (window.isOpen())
     {
-        FrameStart();
+        auto start = FrameStart();
 
         while (const auto event = window.pollEvent())
         {
@@ -126,7 +126,7 @@ void SFML_test()
 
         window.display();
 
-        FrameEnd();
+        FrameEnd(start);
 
         std::chrono::time_point<std::chrono::steady_clock> BenchmarkLoopEnd = std::chrono::steady_clock::now();
         std::chrono::duration<float> elapsed = BenchmarkLoopEnd - BenchmarkLoopStart;

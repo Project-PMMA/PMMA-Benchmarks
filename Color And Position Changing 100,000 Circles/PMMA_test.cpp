@@ -72,7 +72,7 @@ void PMMA_Test() {
     ResetBenchmark();
 
     while (PMMA::General::IsApplicationRunning()) {
-        FrameStart();
+        auto start = FrameStart();
 
         display->Clear();
 
@@ -88,7 +88,7 @@ void PMMA_Test() {
 
         display->Refresh({ .LimitRefreshRate = false });
 
-        FrameEnd();
+        FrameEnd(start);
 
         std::chrono::time_point<std::chrono::steady_clock> BenchmarkLoopEnd = std::chrono::steady_clock::now();
         std::chrono::duration<float> elapsed = BenchmarkLoopEnd - BenchmarkLoopStart;
