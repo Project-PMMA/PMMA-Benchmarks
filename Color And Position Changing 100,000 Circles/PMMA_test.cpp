@@ -11,6 +11,8 @@
 #endif
 
 void PMMA_Test() {
+    std::cout << "PMMA_Test - Initialize" << std::endl;
+
     std::string path = PMMA_INSTALL_DIR;
 
     PMMA::Initialize(path);
@@ -36,6 +38,39 @@ void PMMA_Test() {
         shapes[i].Color.Set_RGBA(color);
     };
 
+    std::cout << "PMMA_Test - Warm Up" << std::endl;
+
+    std::chrono::time_point<std::chrono::steady_clock> WarmUpStartTime = std::chrono::steady_clock::now();
+
+    while (PMMA::General::IsApplicationRunning()) {
+        display->Clear();
+
+        for (auto& shape : shapes) {
+            RandomPosition(position);
+            RandomColor(color);
+
+            shape.ShapeCenter.SetCoordinate(position);
+            shape.Color.Set_RGBA(color);
+
+            shape.Render();
+        }
+
+        display->Refresh({ .LimitRefreshRate = false });
+
+        std::chrono::time_point<std::chrono::steady_clock> WarmUpEndTime = std::chrono::steady_clock::now();
+        std::chrono::duration<float> elapsed = WarmUpEndTime - WarmUpStartTime;
+        float elapsedSeconds = elapsed.count();
+
+        if (elapsedSeconds > 30.0f) {
+            break;
+        }
+    }
+
+    std::cout << "PMMA_Test - Benchmarking..." << std::endl;
+
+    std::chrono::time_point<std::chrono::steady_clock> BenchmarkLoopStart = std::chrono::steady_clock::now();
+    ResetBenchmark();
+
     while (PMMA::General::IsApplicationRunning()) {
         FrameStart();
 
@@ -54,7 +89,17 @@ void PMMA_Test() {
         display->Refresh({ .LimitRefreshRate = false });
 
         FrameEnd();
+
+        std::chrono::time_point<std::chrono::steady_clock> BenchmarkLoopEnd = std::chrono::steady_clock::now();
+        std::chrono::duration<float> elapsed = BenchmarkLoopEnd - BenchmarkLoopStart;
+        float elapsedSeconds = elapsed.count();
+
+        if (elapsedSeconds > 60.0f) {
+            break;
+        }
     }
+
+    std::cout << "PMMA_Test - Done" << std::endl;
 
     PMMA::Uninitialize();
 }

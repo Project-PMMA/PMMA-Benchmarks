@@ -7,6 +7,8 @@
 
 void SFML_test()
 {
+    std::cout << "SFML_test - Initialize" << std::endl;
+
     sf::RenderWindow window(
         sf::VideoMode({ WINDOW_WIDTH, WINDOW_HEIGHT }),
         "SFML"
@@ -39,6 +41,56 @@ void SFML_test()
             color[3]
         });
     }
+
+    std::cout << "SFML_Test - Warm Up" << std::endl;
+
+    std::chrono::time_point<std::chrono::steady_clock> WarmUpStartTime = std::chrono::steady_clock::now();
+
+    while (window.isOpen())
+    {
+        while (const auto event = window.pollEvent())
+        {
+            if (event->is<sf::Event::Closed>())
+                window.close();
+        }
+
+        window.clear();
+
+        for (auto& shape : shapes)
+        {
+            RandomPosition(position);
+            RandomColor(color);
+
+            shape.setPosition({
+                static_cast<float>(position[0]),
+                static_cast<float>(position[1])
+            });
+
+            shape.setFillColor({
+                color[0],
+                color[1],
+                color[2],
+                color[3]
+            });
+
+            window.draw(shape);
+        }
+
+        window.display();
+
+        std::chrono::time_point<std::chrono::steady_clock> WarmUpEndTime = std::chrono::steady_clock::now();
+        std::chrono::duration<float> elapsed = WarmUpEndTime - WarmUpStartTime;
+        float elapsedSeconds = elapsed.count();
+
+        if (elapsedSeconds > 1.0f) {
+            break;
+        }
+    }
+
+    std::cout << "SFML_Test - Benchmarking..." << std::endl;
+
+    std::chrono::time_point<std::chrono::steady_clock> BenchmarkLoopStart = std::chrono::steady_clock::now();
+    ResetBenchmark();
 
     while (window.isOpen())
     {
@@ -75,5 +127,15 @@ void SFML_test()
         window.display();
 
         FrameEnd();
+
+        std::chrono::time_point<std::chrono::steady_clock> BenchmarkLoopEnd = std::chrono::steady_clock::now();
+        std::chrono::duration<float> elapsed = BenchmarkLoopEnd - BenchmarkLoopStart;
+        float elapsedSeconds = elapsed.count();
+
+        if (elapsedSeconds > 60.0f) {
+            break;
+        }
     }
+
+    std::cout << "SFML_Test - Done" << std::endl;
 }

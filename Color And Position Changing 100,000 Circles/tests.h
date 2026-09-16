@@ -3,8 +3,14 @@
 #include <cstdint>
 #include <chrono>
 #include <iostream>
+#include <thread>
+
+#include <windows.h>
+#include <psapi.h>
 
 #include <SFML/Graphics.hpp>
+
+#pragma comment(lib, "psapi.lib")
 
 constexpr unsigned WINDOW_WIDTH  = 1280;
 constexpr unsigned WINDOW_HEIGHT = 720;
@@ -50,23 +56,154 @@ void PMMA_Test();
 
 void SFML_test();
 
+static std::chrono::time_point<std::chrono::steady_clock> BenchmarkStartTime;
 static std::chrono::time_point<std::chrono::steady_clock> FrameStartTime;
-static std::chrono::time_point<std::chrono::steady_clock> FrameEndTime;
 
-inline void FrameStart() {
+static double duration = 0.0;
+
+static unsigned long long LastCPUTime = 0;
+static std::chrono::time_point<std::chrono::steady_clock> LastCPUCheck;
+
+static double cpuUsage = 0.0;
+constexpr double CPU_SAMPLE_INTERVAL = 0.5;
+
+inline unsigned long long FileTimeToULL(const FILETIME& ft)
+{
+    ULARGE_INTEGER result;
+    result.LowPart = ft.dwLowDateTime;
+    result.HighPart = ft.dwHighDateTime;
+
+    return result.QuadPart;
+}
+
+inline void ResetBenchmark()
+{
+    BenchmarkStartTime = std::chrono::steady_clock::now();
+
+    FrameStartTime = {};
+
+    duration = 0.0;
+
+    LastCPUTime = 0;
+    LastCPUCheck = {};
+
+    cpuUsage = 0.0;
+}
+
+inline void FrameStart()
+{
     FrameStartTime = std::chrono::steady_clock::now();
 }
 
-inline void FrameEnd() {
-    FrameEndTime = std::chrono::steady_clock::now();
+inline void FrameEnd()
+{
+    std::chrono::time_point<std::chrono::steady_clock> FrameEndTime = std::chrono::steady_clock::now();
 
-    std::chrono::duration<float> elapsed = FrameEndTime - FrameStartTime;
-    float elapsedSeconds = elapsed.count();
+    std::chrono::duration<double> frameTime =
+        FrameEndTime - FrameStartTime;
 
-    if (elapsedSeconds > 0.0f) {
-        float fps = 1.0f / elapsedSeconds;
-        std::cout << "Elapsed time: " << elapsedSeconds << " s. Frame rate: " << fps << " FPS\n";
-    } else {
-        std::cout << "Elapsed time: 0s (Frame processed too fast to measure)\n";
+    double frameTimeMs = frameTime.count() * 1000.0;
+
+    duration += frameTime.count();
+
+    // --------------------------------------------------
+    // CPU usage
+    // --------------------------------------------------
+
+    FILETIME creationTime;
+    FILETIME exitTime;
+    FILETIME kernelTime;
+    FILETIME userTime;
+
+    if (GetProcessTimes(
+        GetCurrentProcess(),
+        &creationTime,
+        &exitTime,
+        &kernelTime,
+        &userTime))
+    {
+        unsigned long long currentCPUTime =
+            FileTimeToULL(kernelTime) +
+            FileTimeToULL(userTime);
+
+        auto now = std::chrono::steady_clock::now();
+
+        // First CPU measurement establishes the baseline
+        if (LastCPUTime == 0)
+        {
+            LastCPUTime = currentCPUTime;
+            LastCPUCheck = now;
+        }
+        else
+        {
+            double wallTime =
+                std::chrono::duration<double>(
+                    now - LastCPUCheck
+                ).count();
+
+            // Only update CPU usage every 0.5 seconds
+            if (wallTime >= CPU_SAMPLE_INTERVAL)
+            {
+                double cpuTime =
+                    static_cast<double>(
+                        currentCPUTime - LastCPUTime
+                    ) / 10'000'000.0;
+
+                cpuUsage =
+                    (cpuTime / wallTime) * 100.0;
+
+                unsigned int logicalProcessors =
+                    std::thread::hardware_concurrency();
+
+                if (logicalProcessors > 0)
+                {
+                    cpuUsage /=
+                        static_cast<double>(logicalProcessors);
+                }
+
+                // Start the next 0.5 second sample
+                LastCPUTime = currentCPUTime;
+                LastCPUCheck = now;
+            }
+        }
     }
+
+    // --------------------------------------------------
+    // Memory
+    // --------------------------------------------------
+
+    PROCESS_MEMORY_COUNTERS_EX pmc{};
+
+    SIZE_T memoryBytes = 0;
+
+    if (GetProcessMemoryInfo(
+        GetCurrentProcess(),
+        reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&pmc),
+        sizeof(pmc)))
+    {
+        memoryBytes = pmc.WorkingSetSize;
+    }
+
+    double memoryMB =
+        static_cast<double>(memoryBytes) /
+        (1024.0 * 1024.0);
+
+    // --------------------------------------------------
+    // Output
+    // --------------------------------------------------
+
+    std::cout
+    << "Elapsed time: "
+    << duration
+    << " s"
+    << " | Frame time: "
+    << frameTimeMs
+    << " ms"
+    << " | CPU: "
+    << cpuUsage
+    << "%"
+    << " | Memory: "
+    << memoryMB
+    << " MB"
+    << '\n';
 }
