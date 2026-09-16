@@ -18,7 +18,8 @@ add_executable(Color_And_Position_Changing_100_000_Circles
         PMMA_test.cpp
         tests.h
         SFML_test.cpp
-        RayLib_test.cpp)
+        RayLib_test.cpp
+        tests.cpp)
 
 target_include_directories(Color_And_Position_Changing_100_000_Circles PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/extern/pmma/extern/include"

@@ -7,7 +7,7 @@
 #include <raylib.h>
 #include "tests.h"
 
-void Raylib_Test()
+void RayLib_Test()
 {
     std::cout << "Raylib_Test - Initialize" << std::endl;
 

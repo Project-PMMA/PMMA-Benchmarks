@@ -5,7 +5,7 @@
 
 #include "tests.h"
 
-void SFML_test()
+void SFML_Test()
 {
     std::cout << "SFML_test - Initialize" << std::endl;
 
@@ -82,7 +82,7 @@ void SFML_test()
         std::chrono::duration<float> elapsed = WarmUpEndTime - WarmUpStartTime;
         float elapsedSeconds = elapsed.count();
 
-        if (elapsedSeconds > 1.0f) {
+        if (elapsedSeconds > 30.0f) {
             break;
         }
     }
