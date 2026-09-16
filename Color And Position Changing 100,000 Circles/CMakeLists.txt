@@ -21,6 +21,16 @@ add_executable(Color_And_Position_Changing_100_000_Circles
         RayLib_test.cpp
         tests.cpp)
 
+if(MSVC)
+    target_compile_options(Color_And_Position_Changing_100_000_Circles PRIVATE
+            $<$<CONFIG:Release>:/GL>
+    )
+
+    target_link_options(Color_And_Position_Changing_100_000_Circles PRIVATE
+            $<$<CONFIG:Release>:/LTCG>
+    )
+endif()
+
 target_include_directories(Color_And_Position_Changing_100_000_Circles PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/extern/pmma/extern/include"
         "${CMAKE_CURRENT_SOURCE_DIR}/extern/pmma/core/hpp_src"
@@ -57,3 +67,5 @@ add_custom_command(TARGET Color_And_Position_Changing_100_000_Circles POST_BUILD
         "${CMAKE_CURRENT_SOURCE_DIR}/extern/SFML-3.1.0/bin"
         $<TARGET_FILE_DIR:Color_And_Position_Changing_100_000_Circles>
 )
+
+message(STATUS "Current source directory is: ${CMAKE_CURRENT_SOURCE_DIR}")
