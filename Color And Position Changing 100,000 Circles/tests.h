@@ -10,7 +10,7 @@ constexpr unsigned WINDOW_HEIGHT = 720;
 
 constexpr std::size_t CIRCLE_COUNT = 100'000;
 constexpr float CIRCLE_RADIUS = 50.0f;
-constexpr std::size_t CIRCLE_POINTS = 24;
+constexpr std::size_t CIRCLE_POINTS = 86; // 1 + int(((2 * pi) / sin(1 / 50)) * 0.27341772151898736)
 
 constexpr float WARM_UP_TIME = 3.0f;
 constexpr float BENCHMARK_TIME = 3.0f;
