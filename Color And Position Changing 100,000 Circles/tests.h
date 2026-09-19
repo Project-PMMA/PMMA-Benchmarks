@@ -65,3 +65,4 @@ void FrameEnd(std::chrono::time_point<std::chrono::steady_clock> FrameStartTime)
 void PMMA_Test();
 void SFML_Test();
 void RayLib_Test();
+void NanoVG_Test();

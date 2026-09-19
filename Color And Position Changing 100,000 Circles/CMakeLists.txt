@@ -19,7 +19,15 @@ add_executable(Color_And_Position_Changing_100_000_Circles
         tests.h
         SFML_test.cpp
         RayLib_test.cpp
-        tests.cpp)
+        tests.cpp
+        NanoVG_test.cpp
+        extern/nanovg/src/nanovg.c)
+
+set_source_files_properties(
+        extern/nanovg/src/nanovg.c
+        PROPERTIES
+        COMPILE_DEFINITIONS NVG_NO_STB
+)
 
 if(MSVC)
     target_compile_options(Color_And_Position_Changing_100_000_Circles PRIVATE
@@ -36,6 +44,10 @@ target_include_directories(Color_And_Position_Changing_100_000_Circles PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/extern/pmma/core/hpp_src"
 
         "${CMAKE_CURRENT_SOURCE_DIR}/extern/SFML-3.1.0/include"
+
+        "${CMAKE_CURRENT_SOURCE_DIR}/extern/nanovg/src"
+
+        "${CMAKE_CURRENT_SOURCE_DIR}/extern"
 )
 
 target_link_libraries(Color_And_Position_Changing_100_000_Circles PRIVATE
