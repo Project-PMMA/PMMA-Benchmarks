@@ -21,8 +21,8 @@ PMMA is a Python module targeted at helping you build applications in the Python
 
 ## Contents
 
-- [Repository Guide](https://github.com/Project-PMMA/PMMA/blob/main/README.md#installation)
-- [Repository Signposts](https://github.com/Project-PMMA/PMMA/blob/main/README.md#installation)
+- [Repository Guide](https://github.com/Project-PMMA/PMMA-Benchmarks/tree/cpp/Windows#repository-guide)
+- [Repository Signposts](https://github.com/Project-PMMA/PMMA-Benchmarks/tree/cpp/Windows#repository-signposts)
 
 ## Repository Guide
 
