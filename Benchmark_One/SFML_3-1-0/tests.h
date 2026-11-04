@@ -12,8 +12,8 @@ constexpr std::size_t CIRCLE_COUNT = 100'000;
 constexpr float CIRCLE_RADIUS = 50.0f;
 constexpr std::size_t CIRCLE_POINTS = 86; // 1 + int(((2 * pi) / sin(1 / 50)) * 0.27341772151898736)
 
-constexpr float WARM_UP_TIME = 3.0f;
-constexpr float BENCHMARK_TIME = 3.0f;
+constexpr float WARM_UP_TIME = 30.0f;
+constexpr float BENCHMARK_TIME = 60.0f;
 
 static std::chrono::time_point<std::chrono::steady_clock> BenchmarkStartTime;
 
@@ -62,7 +62,4 @@ std::chrono::time_point<std::chrono::steady_clock> FrameStart();
 
 void FrameEnd(std::chrono::time_point<std::chrono::steady_clock> FrameStartTime);
 
-void PMMA_Test();
 void SFML_Test();
-void RayLib_Test();
-void NanoVG_Test();
